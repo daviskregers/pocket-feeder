@@ -1,4 +1,4 @@
-# Pocket aggregator
+# Pocket Feeder
 
 Currently WIP.
 
