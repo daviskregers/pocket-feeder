@@ -3,3 +3,5 @@ sources:
     exclude:
       category:
         - value
+      author:
+        - some author
