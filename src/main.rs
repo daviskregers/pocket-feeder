@@ -2,7 +2,6 @@ use std::env;
 use std::fs;
 use serde::Deserialize;
 
-
 extern crate serde_yaml;
 
 #[derive(Deserialize, Debug)]
@@ -26,6 +25,11 @@ fn main() {
                 .expect("Something went wrong when parsing sources.yaml");
 
     for source in &sources.sources {
-        println!("Got source: {:?}", source);
+        let feed : String = reqwest::blocking::get(source.src.as_str())
+            .expect(format!("Error getting feed from {}", source.src).as_str())
+            .text()
+            .expect(format!("Error parsing response from {}", source.src).as_str());
+
+        println!("Got a response from {}: {:#?}", source.src, feed);
     }
 }
