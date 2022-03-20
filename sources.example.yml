@@ -1,2 +1,5 @@
 sources:
   - src: https:/example.com/rss
+    exclude:
+      category:
+        - value
