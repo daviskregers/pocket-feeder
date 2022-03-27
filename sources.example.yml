@@ -1,3 +1,5 @@
+pocket:
+  consumer: pocket-consumer-key
 sources:
   - src: https:/example.com/rss
     exclude:
