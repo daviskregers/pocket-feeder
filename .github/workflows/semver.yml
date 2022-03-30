@@ -12,7 +12,7 @@ jobs:
         id: semantic
         if: github.ref == 'refs/heads/main'
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           changelog-generator-opt: "emojis=true"
           allow-initial-development-versions: true
           force-bump-patch-version: true
