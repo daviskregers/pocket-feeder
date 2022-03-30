@@ -4,16 +4,30 @@ on:
   push:
     branches:
       - main
-      - 'releases/*'
-
 jobs:
-  test:
+  release:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: ActionsDesk/semver
-      with:
-        bump: patch
-        prerelease: withBuildNumber
-        prelabel: rc
-        initial_version: '1.0.1'
+      - uses: go-semantic-release/action@v1
+        id: semantic
+        if: github.ref == 'refs/heads/main'
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          changelog-generator-opt: "emojis=true"
+          allow-initial-development-versions: true
+          force-bump-patch-version: true
+      - name: Set version
+        id: version
+        run: |
+          if [ ${{ github.event.ref }} == 'refs/heads/main' ]; then
+            VERSION=${{ steps.semantic.outputs.version }}
+          else
+            VERSION=$(echo $GITHUB_SHA | cut -c1-7)
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=VERSION::$VERSION"
+      - name: Print version number
+        run: |
+          echo "this is version ${{ env.VERSION }}"
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
