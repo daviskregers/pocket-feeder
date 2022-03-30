@@ -2,6 +2,7 @@ pocket:
   consumer: pocket-consumer-key
 sources:
   - src: https:/example.com/rss
+    name: example
     exclude:
       category:
         - value

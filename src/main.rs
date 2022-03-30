@@ -21,6 +21,7 @@ const ACCESS_TOKEN_FILE : &str = ".access_token";
 struct Source {
     src: String,
     exclude: Option<ExcludeRules>,
+    name: String,
 }
 
 impl Source {
@@ -329,7 +330,7 @@ fn read_pocket_items(key: String, access_token: String) -> PocketItemResponse {
     response
 }
 
-fn publish_pocket_item(key: String, access_token: String, item: Item) {
+fn publish_pocket_item(key: String, access_token: String, item: Item, source_name: String) {
     let mut map = HashMap::new();
     map.insert("consumer_key", key);
     map.insert("access_token", access_token);
@@ -346,6 +347,7 @@ fn publish_pocket_item(key: String, access_token: String, item: Item) {
         None => {}
     }
     categories.push("RSS feeder".to_string());
+    categories.push(source_name.to_string());
 
     map.insert("tags", categories.join(","));
 
@@ -383,7 +385,7 @@ fn main() {
                 println!("Item {} is in pocket, skipping...", item.link);
             } else {
                 println!("Item {} isnt in pocket, adding!", item.link);
-                publish_pocket_item(consumer_key.clone(), access_token.clone(), item.clone());
+                publish_pocket_item(consumer_key.clone(), access_token.clone(), item.clone(), source.name.clone());
             }
             items.item.push(item.clone())
         }
