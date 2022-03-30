@@ -1,5 +1,7 @@
 pocket:
   consumer: pocket-consumer-key
+sentry:
+  dsn: https://smth.ingest.sentry.io/smth
 sources:
   - src: https:/example.com/rss
     name: example

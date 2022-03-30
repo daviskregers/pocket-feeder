@@ -72,12 +72,18 @@ struct ExcludeRules {
 #[derive(Serialize, Deserialize, Debug)]
 struct SourceList {
     pocket: PocketConfiguration,
+    sentry: Option<SentryConfiguration>,
     sources: Vec<Source>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 struct PocketConfiguration {
     consumer: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct SentryConfiguration {
+    dsn: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -366,6 +372,32 @@ fn publish_pocket_item(key: String, access_token: String, item: Item, source_nam
 
 fn main() {
     let sources: SourceList = get_sources();
+    let _guard;
+
+    match sources.sentry {
+        Some(s) => {
+            match s.dsn {
+                Some(dsn) => {
+                    if ! dsn.is_empty() {
+                        println!("Started up sentry!, {}", dsn);
+                        _guard = sentry::init((dsn, sentry::ClientOptions {
+                            release: sentry::release_name!(),
+                            ..Default::default()
+                        }));
+                    } else {
+                        println!("Sentry DSN empty, ignoring...");
+                    }
+                },
+                _ => {
+                    println!("Sentry DSN not set, ignoring...");
+                },
+            }
+        },
+        _ => {
+            println!("Sentry configuration not set, ignoring ...");
+        }
+    }
+
     let consumer_key : String = sources.pocket.consumer;
     let access_token = read_access_token(consumer_key.clone());
     println!("Consumer token: {}", consumer_key);
@@ -385,7 +417,7 @@ fn main() {
                 println!("Item {} is in pocket, skipping...", item.link);
             } else {
                 println!("Item {} isnt in pocket, adding!", item.link);
-                publish_pocket_item(consumer_key.clone(), access_token.clone(), item.clone(), source.name.clone());
+                // publish_pocket_item(consumer_key.clone(), access_token.clone(), item.clone(), source.name.clone());
             }
             items.item.push(item.clone())
         }
