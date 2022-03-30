@@ -417,7 +417,7 @@ fn main() {
                 println!("Item {} is in pocket, skipping...", item.link);
             } else {
                 println!("Item {} isnt in pocket, adding!", item.link);
-                // publish_pocket_item(consumer_key.clone(), access_token.clone(), item.clone(), source.name.clone());
+                publish_pocket_item(consumer_key.clone(), access_token.clone(), item.clone(), source.name.clone());
             }
             items.item.push(item.clone())
         }
