@@ -1,0 +1,19 @@
+name: "semver"
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'releases/*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actionsdesk/semver
+      with:
+        bump: patch
+        prerelease: withBuildNumber
+        prelabel: rc
+        initial_version: '1.0.1'
