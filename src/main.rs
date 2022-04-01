@@ -13,8 +13,10 @@ use webbrowser;
 
 mod item;
 mod source;
+mod config;
 use crate::item::Item;
 use crate::source::Source;
+use crate::config::Config;
 
 extern crate serde_yaml;
 
@@ -22,25 +24,6 @@ mod pocket_api;
 
 const HTTP_PORT : u16 = 13372;
 const ACCESS_TOKEN_FILE : &str = ".access_token";
-
-
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Config {
-    pocket: PocketConfiguration,
-    sentry: Option<SentryConfiguration>,
-    sources: Vec<Source>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct PocketConfiguration {
-    consumer: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct SentryConfiguration {
-    dsn: Option<String>,
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Feed {
