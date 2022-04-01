@@ -27,7 +27,7 @@ const ACCESS_TOKEN_FILE : &str = ".access_token";
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Feed {
-    channel: ItemList,
+    channel: Channel,
 }
 
 impl Feed {
@@ -46,7 +46,7 @@ impl Feed {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct ItemList {
+struct Channel {
     item: Vec<Item>,
 }
 
@@ -107,7 +107,7 @@ fn get_feed(source: &Source) -> Feed {
         .expect(format!("Could not parse the RSS response for {}", source.src).as_str())
 }
 
-fn write_output(items: &ItemList) {
+fn write_output(items: &Channel) {
     let serialized_items: String = serde_yaml::to_string(&items).expect("Error serializing items");
 
     println!("Writing all the items into output.yml file");
@@ -290,7 +290,7 @@ fn main() {
         panic!("TODO: implement complete pocket item list");
     }
 
-    let mut items: ItemList = ItemList { item: vec![] };
+    let mut items: Channel = Channel { item: vec![] };
 
     for source in &sources.sources {
         let content: Feed = get_feed(source);
