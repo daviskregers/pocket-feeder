@@ -1,4 +1,3 @@
-use chrono::DateTime;
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::{Deserialize, Serialize};
 use serde_json;
@@ -12,62 +11,19 @@ use std::io::Write;
 use std::net::TcpListener;
 use webbrowser;
 
+mod item;
+mod source;
+use crate::item::Item;
+use crate::source::Source;
+
 extern crate serde_yaml;
+
+mod pocket_api;
 
 const HTTP_PORT : u16 = 13372;
 const ACCESS_TOKEN_FILE : &str = ".access_token";
 
-#[derive(Serialize, Deserialize, Debug)]
-struct Source {
-    src: String,
-    exclude: Option<ExcludeRules>,
-    name: String,
-}
 
-impl Source {
-    fn item_included(self: &Self, item: &Item) -> Option<bool> {
-        let mut excluded = false;
-
-        match &item.author {
-            Some(author) => {
-                for item_author in author {
-                    if self
-                        .exclude
-                        .as_ref()?
-                        .author
-                        .as_ref()?
-                        .contains(&item_author)
-                    {
-                        excluded = true;
-                        break;
-                    }
-                }
-            },
-            None => {},
-        }
-
-        for item_category in &item.category.clone()? {
-            if self
-                .exclude
-                .as_ref()?
-                .category
-                .as_ref()?
-                .contains(&item_category)
-            {
-                excluded = true;
-                break;
-            }
-        }
-
-        Some(!excluded)
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct ExcludeRules {
-    category: Option<Vec<String>>,
-    author: Option<Vec<String>>,
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 struct SourceList {
@@ -111,29 +67,6 @@ struct ItemList {
     item: Vec<Item>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[allow(non_snake_case)]
-struct Item {
-    author: Option<Vec<String>>,
-    category: Option<Vec<String>>,
-    description: String,
-    link: String,
-    pubDate: String,
-    timestamp: Option<i64>,
-    utc: Option<String>,
-    title: String,
-}
-
-impl Item {
-    fn add_timestamps(self: &mut Self) {
-        let datetime = DateTime::parse_from_rfc2822(self.pubDate.as_str())
-            .expect("Error while parsing pubDate")
-            .naive_utc();
-
-        self.timestamp = Some(datetime.timestamp());
-        self.utc = Some(datetime.to_string());
-    }
-}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct RequestResponse {
@@ -336,39 +269,6 @@ fn read_pocket_items(key: String, access_token: String) -> PocketItemResponse {
     response
 }
 
-fn publish_pocket_item(key: String, access_token: String, item: Item, source_name: String) {
-    let mut map = HashMap::new();
-    map.insert("consumer_key", key);
-    map.insert("access_token", access_token);
-    map.insert("url", item.link);
-    map.insert("title", item.title);
-
-    let mut categories = vec!();
-    match item.category {
-        Some(cats) => {
-            for cat in cats {
-                categories.push(cat);
-            }
-        },
-        None => {}
-    }
-    categories.push("RSS feeder".to_string());
-    categories.push(source_name.to_string());
-
-    map.insert("tags", categories.join(","));
-
-    let mut headers = HeaderMap::new();
-    headers.insert("X-Accept", HeaderValue::from_static("application/json"));
-
-    let client = reqwest::blocking::Client::new();
-    client.post("https://getpocket.com/v3/add")
-        .json(&map)
-        .headers(headers)
-        .send()
-        .expect("error requesting item from pocket")
-        .text()
-        .expect("error parsing response from pocket");
-}
 
 fn main() {
     let sources: SourceList = get_sources();
@@ -417,7 +317,7 @@ fn main() {
                 println!("Item {} is in pocket, skipping...", item.link);
             } else {
                 println!("Item {} isnt in pocket, adding!", item.link);
-                publish_pocket_item(consumer_key.clone(), access_token.clone(), item.clone(), source.name.clone());
+                pocket_api::publish_pocket_item(consumer_key.clone(), access_token.clone(), item.clone(), source.name.clone());
             }
             items.item.push(item.clone())
         }
