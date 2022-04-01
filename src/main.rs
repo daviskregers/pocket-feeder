@@ -26,7 +26,7 @@ const ACCESS_TOKEN_FILE : &str = ".access_token";
 
 
 #[derive(Serialize, Deserialize, Debug)]
-struct SourceList {
+struct Config {
     pocket: PocketConfiguration,
     sentry: Option<SentryConfiguration>,
     sources: Vec<Source>,
@@ -104,7 +104,7 @@ struct PocketItem {
     given_title: String,
 }
 
-fn get_sources() -> SourceList {
+fn get_config() -> Config {
     let file: String = env::current_dir().unwrap().display().to_string() + "/sources.yml";
     println!("Reading file: {}", file);
 
@@ -271,7 +271,7 @@ fn read_pocket_items(key: String, access_token: String) -> PocketItemResponse {
 
 
 fn main() {
-    let sources: SourceList = get_sources();
+    let sources: Config = get_config();
     let _guard;
 
     match sources.sentry {
