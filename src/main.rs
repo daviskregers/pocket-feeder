@@ -77,7 +77,7 @@ fn main() {
         let content: Feed = source::get_feed(source);
         for item in &mut content.filtered_items(source) {
             item.add_timestamps();
-            if pocket_items.clone().has_link(item.link.clone()) {
+            if pocket_items.clone().has_link(&item.link) {
                 println!("Item {} is in pocket, skipping...", item.link);
             } else {
                 println!("Item {} isnt in pocket, adding!", item.link);
