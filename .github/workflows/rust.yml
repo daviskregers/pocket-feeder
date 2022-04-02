@@ -25,11 +25,13 @@ jobs:
           components: llvm-tools-preview
       - name: Install nightly
         run: rustup default nightly
+      - uses: actions/checkout@v2
       - name: debug
         run: ls -lah /home/runner/work/pocket-feeder/pocket-feeder
       - name: debug 2
         run: ls -lah /home/runner/work/pocket-feeder
       - uses: Swatinem/fucov@v1
+        needs: checkout
       - uses: codecov/codecov-action@v1
         with:
           directory: coverage
