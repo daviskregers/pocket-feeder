@@ -18,15 +18,11 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - name: Install nightly
-        run: rustup install nightly && rustup default nightly
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: nightly
           components: llvm-tools-preview
-
-      # runs cargo with defaults flags, using the default `lcov` output
       - uses: Swatinem/fucov@v1
 
       # afterwards, upload the report to codecov
