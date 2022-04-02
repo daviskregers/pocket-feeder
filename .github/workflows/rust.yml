@@ -27,6 +27,8 @@ jobs:
         run: rustup default nightly
       - name: debug
         run: ls -lah /home/runner/work/pocket-feeder/pocket-feeder
+      - name: debug 2
+        run: ls -lah /home/runner/work/pocket-feeder
       - uses: Swatinem/fucov@v1
       - uses: codecov/codecov-action@v1
         with:
