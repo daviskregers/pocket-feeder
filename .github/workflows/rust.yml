@@ -23,9 +23,9 @@ jobs:
           profile: minimal
           toolchain: nightly
           components: llvm-tools-preview
+      - name: Install nightly
+        run: rustup default nightly
       - uses: Swatinem/fucov@v1
-
-      # afterwards, upload the report to codecov
       - uses: codecov/codecov-action@v1
         with:
           directory: coverage
