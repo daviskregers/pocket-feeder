@@ -47,7 +47,6 @@ mod tests {
             }
         };
 
-        println!("GOT HERE!");
         let source = Source {
             src: "somewhere".to_string(),
             name: "some name".to_string(),
@@ -58,8 +57,6 @@ mod tests {
         };
 
         let actual = feed.filtered_items(&source);
-
-        println!("got actual: {:?}", actual);
 
         assert_eq!(vec![feed.channel.item[0].clone()], actual);
     }
