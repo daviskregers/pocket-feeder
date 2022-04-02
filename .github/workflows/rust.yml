@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install nightly
-        run: runstup install nightly && rustup default nightly
+        run: rustup install nightly && rustup default nightly
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
