@@ -10,8 +10,8 @@ Applies additional filters on top of the RSS feeds to exclude specific categorie
 # Running
 
 ```console
-$ cp sources.example.yml
-$ vim sources.yml
+$ cp config.example.yml
+$ vim config.yml
 $ cargo run
 ```
 
